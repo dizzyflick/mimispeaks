@@ -1,0 +1,41 @@
+font-face {
+  <link href="https://fonts.googleapis.com/css?family=Dosis|Great+Vibes" rel="stylesheet">
+}
+
+body{
+   background-color: #b1effd;
+   font-family: 'Dosis', sans-serif;
+   padding: 30px;
+    text-align: center;
+}
+
+h2 {
+    padding: 10px;
+}
+
+p {
+    background-color: white;
+    padding:  10px 10px;
+    text-align: left;
+}
+
+
+form {
+    background-color: white;
+   padding: 50px;
+}
+
+a {
+    color: black;
+}
+
+footer {
+   display: block; 
+    padding: 10px;
+    background-color: white;
+    text-align: center;
+}
+
+footer a {
+    text-decoration: none;
+}
