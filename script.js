@@ -3,58 +3,77 @@ var readyToRun = function() {
 }
 
 $(document).ready(function() {
-    $("#weatherSubmit").click(function(e) {
+ function send() {
+  var text = $("messageInput").val();
+  var myurl= "https://api.api.ai/v1/"
+  console.log(text);
+  $.ajax({
+    type: "POST",
+    url: myurl + "query",
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    headers: {
+      "Authorization": "Bearer " + "8d368cc390124b04942502744d279c1a",
+    },
+    data: JSON.stringify({query: text, lang: "en", sessionId: "runbarry"}),
+
+    success: function(data) {
+      prepareResponse(data);
+    },
+    error: function() {
+      respond(messageInternalError);
+    }
+  });
+}
+
+function prepareResponse(val) {
+  var debugJSON = JSON.stringify(val, undefined, 2),
+      spokenResponse = val.result.speech;
+
+  respond(spokenResponse);
+  console.log(spokenResponse);
+  debugRespond(debugJSON);
+}   
+
+$("#messageSubmit").click(function(e) {
     e.preventDefault();
-    var value = $("#weatherInput").val();
+    var value = $("#messageInput").val();
     console.log(value);
-    var myurl= "http://api.openweathermap.org/data/2.5/weather?q=" + value + ",US&units=imperial" + "&APPID=6d9a7ea2c1a6d3a9432b7c95d592577f";
+    var myurl= "https://api.api.ai/v1/";
 $.ajax({
-    url : myurl,
-    dataType : "json",
-    success : function(json) {
-        console.log(json);
+    type: "POST",
+    url: myurl + "query",
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    headers: {
+      "Authorization": "Bearer " + "8d368cc390124b04942502744d279c1a",
+    },
+    data: JSON.stringify({query: value, lang: "en", sessionId: "runbarry"}),
+    
+    success : function(data) {
+        console.log(data);
 var results = "";
-		results += '<h2>Weather in ' + json.name + "</h2>";
-		for (var i=0; i<json.weather.length; i++) {
-		    results += '<img src="http://openweathermap.org/img/w/' + json.weather[i].icon + '.png"/>';
-		}
-		results += '<h2>' + json.main.temp + " &deg;F</h2>"
-		results += "<p>"
-                results += "Maximum: " + json.main.temp_max + " | Minimum: " + json.main.temp_min
-                results += "</p>";
-		results += "<p>"
-		for (var i=0; i<json.weather.length; i++) {
-		    results += json.weather[i].description
-		    if (i !== json.weather.length - 1)
-			results += ", "
-		}
-		results += "</p>";
-		results += "<p>"
-		results += json.main.humidity + "% humidity" + "<br>" + "Wind: " + json.wind.speed + " mph"
-		results += "</p>";
-		$("#weatherResults").html(results);
+        results += data.result.speech;
+	$("#messageResults").html(results);
+	console.log(data.result.metadata.intentName);
+	if (data.result.metadata.intentName === "NegEmotion") {
+	  document.getElementById('emotion').src="/images/oh.gif";
+	}
+        else if (data.result.metadata.intentName === "play") {
+          document.getElementById('emotion').src="/images/loud.gif";
+        }
+        else if (data.result.metadata.intentName === "mean") {
+          document.getElementById('emotion').src="/images/ugh.gif";
+        }
+        else if (data.result.metadata.intentName === "Default Fallback Intent") {
+          document.getElementById('emotion').src="/images/oh.gif";
+        }
+        else {
+          document.getElementById('emotion').src="/images/mimi.gif";
+        }
+    document.getElementById("myForm").reset();
     }
     });	
 });
-
- $("#searchSubmit").click(function(e) {
-    e.preventDefault();
-    var value = $("#searchInput").val();
-    console.log(value);
-    var myurl= "https://api.stackexchange.com/2.2/search?order=desc&sort=activity&site=stackoverflow&intitle=" + value;
-$.ajax({
-    url : myurl,
-    dataType : "json",
-    success : function(json) {
-        console.log(json);
-	var results = "";
-	for (var i=0; i<json.items.length; i++) {
-                    results += "<a href=\"" + json.items[i].link + "\">" + json.items[i].title + "</a>" + "<br>"
-	}
-	$("#searchResults").html(results);
-    }
-    });
-
 });
 
-});
